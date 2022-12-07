@@ -10,15 +10,12 @@
 
 # 네트워크 수행
   1. 네트워크 초기화 
-    ```
+```
     docker rm -f $(docker ps -aq)
-    
     docker rmi -f $(docker images dev-*)
-    
     docker network prune
-    
     docker volume prune
-    ```
+```
   2. 네트워크 수행
     `cd 프로젝트경로/ulsan-network`
     `./startnetwork.sh`

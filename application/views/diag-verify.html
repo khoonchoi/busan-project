@@ -25,7 +25,7 @@
 
   <div class="container">
     <br>
-    <h2>얼마개 영수증 등록 페이지</h2><br>
+    <h2>얼마개 진료정보 검증 페이지</h2><br>
     <!-- 폼 -> button, result 수정 및 추가 -->
 
       <label class="form-label">Certificate:</label><br>
@@ -34,46 +34,38 @@
       <label class="form-label">Receipt ID:</label><br>
       <input class="form-control" type="text" id="recid" value=""><br>
 
-      <label class="form-label">Gardian:</label><br>
-      <input class="form-control" type="text" id="gardian" value=""><br>
-
-      <label class="form-label">Diagnosis Info:</label><br>
-      <input class="form-control" type="text" id="dinfo" value=""><br>
-      
-      <label class="form-label">Price:</label><br>
-      <input class="form-control" type="text" id="price" value=""><br>
-
+      <label class="form-label">Verification Info:</label><br>
+      <input class="form-control" type="text" id="verification" value=""><br>
 
       <!-- <input class="btn btn-outline-primary" type="submit" value="Submit"> -->
-      <button id="register_btn" class="btn btn-outline-warning">영수증등록</button>
+      <button id="verify_btn" class="btn btn-outline-warning">진료정보검증</button>
 
-    <p>If you click the "Submit" button, the form-data will be sent to a page called "/howdoc".</p>
-    <p id="register_result"></p>
+    <p>If you click the "Submit" button, the form-data will be sent to a page called "/howdog".</p>
+    <p id="verify_result"></p>
   </div>
 
 </body>
 
 <!-- 스크립트 영역 추가  -->
 <script>
-  $("#register_btn").click( () => {
+  $("#verify_btn").click( () => {
       const cert = $("#cert").val();
       const recid = $("#recid").val();
-      const gardian = $("#gardian").val();
-      const dinfo = $("#dinfo").val();
-      const price = $("#price").val();
+      const verification = $("#verification").val();
 
-      $.post("/howdog", {cert, recid, gardian, dinfo, price}, (data, status) =>{
+
+      $.post("/howdog", {cert, recid, vinfo }, (data, status) =>{
 
           if(data.result == "success"){
-              $("#register_result").empty();
-              $("#register_result").append('<i class="fa-regular fa-circle-check fa-5x" ></i><br>')
+              $("#verify_result").empty();
+              $("#verify_result").append('<i class="fa-regular fa-circle-check fa-5x" ></i><br>')
               const res = JSON.stringify(data);
-              $("#register_result").append(res);
+              $("#verify_result").append(res);
           } else {
-              $("#register_result").empty();
+              $("#verify_result").empty();
               const res = JSON.stringify(data);
-              $("#register_result").append('<i class="fa-regular fa-circle-xmark fa-5x"></i><br>')
-              $("#register_result").append(res);
+              $("#verify_result").append('<i class="fa-regular fa-circle-xmark fa-5x"></i><br>')
+              $("#verify_result").append(res);
           }
       });
   });

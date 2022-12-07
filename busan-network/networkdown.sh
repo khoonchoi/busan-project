@@ -22,3 +22,5 @@ fi
 if [ -d "channel-artifacts" ]; then
     rm -Rf channel-artifacts/*
 fi
+
+docker rmi -f $(docker images dev-* -q)

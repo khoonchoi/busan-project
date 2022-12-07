@@ -73,6 +73,53 @@ app.post('/howdog', async (req, res) => { // (TO DO) url 변경
     }
 });
 
+app.post('/howdog', async (req, res) => { // (TO DO) url 변경
+
+    try {
+        // (TO DO) client로 부터 파리미터 받기
+        const cert = req.body.cert;
+        const recid = req.body.recid;
+        const vinfo = req.body.vinfo;
+
+        console.log('/howdog-post-' + cert + '-' + recid + '-' + vinfo);
+
+        // 인증서 확인 -> (TO DO) 전달받은 인증서 사용하기
+        const walletPath = path.join(process.cwd(), 'wallet');
+        const wallet = await Wallets.newFileSystemWallet(walletPath);
+        console.log(`Wallet path: ${walletPath}`);
+        const identity = await wallet.get(cert);
+        if (!identity) {
+            console.log(`An identity for the user ${cert} does not exist in the wallet`);
+            console.log('Run the registerUser.js application before retrying');
+            const result_obj = JSON.parse('{"result":"fail", "error":"An identity for the user does not exist in the wallet"}');
+            res.send(result_obj);
+            return;
+        }
+
+        // GW -> CH -> CC
+        const gateway = new Gateway();
+        await gateway.connect(ccp, { wallet, identity: cert, discovery: { enabled: true, asLocalhost: true } });
+        const network = await gateway.getNetwork('busanchannel');
+        const contract = network.getContract('howdog');
+        // (TO DO) changeCarOwner
+        await contract.submitTransaction('Verify_receipt', recid, vinfo);
+        console.log('Transaction has been submitted');
+        await gateway.disconnect();
+
+        // submit Transaction -> (TO DO) JSON 형태로 보내주기
+        const result_obj = JSON.parse('{"result":"success", "message":"Transaction has been submitted."}');
+        res.send(result_obj);
+
+    } catch (error) {
+        // client에게 결과 전송 - 실패
+        console.log('error occured in generating in submitting a transaction.');
+        const result_obj = JSON.parse('{"result":"fail", "error":"error occured in submitting a transaction."}');
+        res.send(result_obj);
+    }
+});
+
+
+
 app.get('/howdog', async (req, res) => { // (TO DO) url 변경
 
     try {

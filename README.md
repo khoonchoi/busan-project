@@ -3,10 +3,9 @@
 2022 부산 블록체인교육 마지막 기수 미니프로젝트
 
 # 선행조건
-
-  hyperledger fabric 2.2 LTS 설치
-  docker, docker-compose 설치
-  jq 설치
+  - hyperledger fabric 2.2 LTS 설치
+  - docker, docker-compose 설치
+  - jq 설치
 
 # 네트워크 수행
   1. 네트워크 초기화 

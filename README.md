@@ -17,22 +17,24 @@
     docker volume prune
 ```
   2. 네트워크 수행
-    `cd 프로젝트경로/ulsan-network`
-    `./startnetwork.sh`
-    `./createchannel.sh`
-    `./setAnchorPeerUpdate.sh`
-    `./ccp-generate.sh`
-
+```
+cd 프로젝트경로/ulsan-network
+./startnetwork.sh
+./createchannel.sh
+./setAnchorPeerUpdate.sh
+./ccp-generate.sh
+```
   3. 환경설정
-    `export FABRIC_CFG_PATH=${PWD}/config`
-    `export CORE_PEER_TLS_ENABLED=true`
-    `export CORE_PEER_LOCALMSPID="Org1MSP"`
-    `export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt`
-    `export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp`
-    `export CORE_PEER_ADDRESS=localhost:7051`
-
+```
+export FABRIC_CFG_PATH=${PWD}/config
+export CORE_PEER_TLS_ENABLED=true
+export CORE_PEER_LOCALMSPID="Org1MSP"
+export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp`
+export CORE_PEER_ADDRESS=localhost:7051
+```
   4. 채널 확인
-    `peer channel list`
+`peer channel list`
 
 # 체인코드 배포
   deployCC.sh 내부에 관련 정보변경 ( 체인코드 이름, 버전, 정책, 소스코드경로, 채널)

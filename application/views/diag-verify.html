@@ -54,7 +54,7 @@
       const verification = $("#verification").val();
 
 
-      $.post("/howdog", {cert, recid, vinfo }, (data, status) =>{
+      $.post("/howdog/verification", {cert, recid, vinfo }, (data, status) =>{
 
           if(data.result == "success"){
               $("#verify_result").empty();

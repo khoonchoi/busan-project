@@ -17,13 +17,104 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // fabric 연결설정
-const ccpPath = path.resolve(__dirname, 'connection-org1.json');
+const ccpPath = path.resolve(__dirname, '../busan-network/organizations/peerOrganizations/org1.example.com/connection-org1.json');
 const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
 const ccp = JSON.parse(ccpJSON);
 
 // index.html 페이지 라우팅
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
+});
+
+app.post('/bagain', async (req, res) => { // (TO DO) url 변경
+
+    try {
+        // (TO DO) client로 부터 파리미터 받기
+        const cert = req.body.rcert;
+        const rid = req.body.rid;
+        const rserial = req.body.rserial;
+        const rdoner = req.body.rdoner;
+
+        console.log('/bagain-post-' + cert + '-' + rid + '-' + rserial+ '-' + rdoner );
+
+        // 인증서 확인 -> (TO DO) 전달받은 인증서 사용하기
+        const walletPath = path.join(process.cwd(), 'wallet');
+        const wallet = await Wallets.newFileSystemWallet(walletPath);
+        console.log(`Wallet path: ${walletPath}`);
+        const identity = await wallet.get(cert);
+        if (!identity) {
+            console.log(`An identity for the user ${cert} does not exist in the wallet`);
+            console.log('Run the registerUser.js application before retrying');
+            const result_obj = JSON.parse('{"result":"fail", "error":"An identity for the user does not exist in the wallet"}');
+            res.send(result_obj);
+            return;
+        }
+
+        // GW -> CH -> CC
+        const gateway = new Gateway();
+        await gateway.connect(ccp, { wallet, identity: cert, discovery: { enabled: true, asLocalhost: true } });
+        const network = await gateway.getNetwork('busanchannel');
+        const contract = network.getContract('bagain');
+        // (TO DO) changeCarOwner
+        await contract.submitTransaction('Collect', rid, rserial, rdoner);
+        console.log('Transaction has been submitted');
+        await gateway.disconnect();
+
+        // submit Transaction -> (TO DO) JSON 형태로 보내주기
+        const result_obj = JSON.parse('{"result":"success", "message":"Transaction has been submitted."}');
+        res.send(result_obj);
+
+    } catch (error) {
+        // client에게 결과 전송 - 실패
+        console.log('error occured in generating in submitting a transaction.');
+        const result_obj = JSON.parse('{"result":"fail", "error":"error occured in submitting a transaction."}');
+        res.send(result_obj);
+    }
+});
+
+app.get('/bagain', async (req, res) => { // (TO DO) url 변경
+
+    try {
+        // (TO DO) client로 부터 파리미터 받기
+        const cert = req.query.qcert;
+        const qid = req.query.qid;
+
+        console.log('/bagain-get-' + cert + '-' + qid);
+
+        // 인증서 확인 -> (TO DO) 전달받은 인증서 사용하기
+        const walletPath = path.join(process.cwd(), 'wallet');
+        const wallet = await Wallets.newFileSystemWallet(walletPath);
+        console.log(`Wallet path: ${walletPath}`);
+        const identity = await wallet.get(cert);
+        if (!identity) {
+            console.log(`An identity for the user ${cert} does not exist in the wallet`);
+            console.log('Run the registerUser.js application before retrying');
+            const result_obj = JSON.parse('{"result":"fail", "error":"An identity for the user does not exist in the wallet"}');
+            res.send(result_obj);
+            return;
+        }
+
+        // GW -> CH -> CC
+        const gateway = new Gateway();
+        await gateway.connect(ccp, { wallet, identity: cert, discovery: { enabled: true, asLocalhost: true } });
+        const network = await gateway.getNetwork('busanchannel');
+        const contract = network.getContract('bagain');
+        // (TO DO) GetHistory
+        const result = await contract.evaluateTransaction('Query', qid);
+        console.log('Transaction has been evaluted');
+        await gateway.disconnect();
+
+        // submit Transaction -> (TO DO) JSON 형태로 보내주기
+        const result_obj = JSON.parse(`{"result":"success", "message":${result}}`);
+        res.send(result_obj);
+
+    } catch (error) {
+        // client에게 결과 전송 - 실패
+        console.log('error occured in generating in submitting a transaction.');
+        console.log(error.message)
+        const result_obj = JSON.parse('{"result":"fail", "error":"error occured in evaluating a transaction."}');
+        res.send(result_obj);
+    }
 });
 
 app.post('/howdog', async (req, res) => { // (TO DO) url 변경
@@ -73,7 +164,7 @@ app.post('/howdog', async (req, res) => { // (TO DO) url 변경
     }
 });
 
-app.post('/howdog', async (req, res) => { // (TO DO) url 변경
+app.post('/howdog/verification', async (req, res) => { // (TO DO) url 변경
 
     try {
         // (TO DO) client로 부터 파리미터 받기
@@ -117,8 +208,6 @@ app.post('/howdog', async (req, res) => { // (TO DO) url 변경
         res.send(result_obj);
     }
 });
-
-
 
 app.get('/howdog', async (req, res) => { // (TO DO) url 변경
 
@@ -164,7 +253,6 @@ app.get('/howdog', async (req, res) => { // (TO DO) url 변경
     }
 });
 
-// /car/history GET 차량정보 이력 ROUTING
 app.get('/howdog/history', async (req, res) => { // (TO DO) url 변경
 
     try {
